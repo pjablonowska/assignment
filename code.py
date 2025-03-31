@@ -74,16 +74,6 @@ df_all_proc['Delta'] = df_all_proc[cmonth] - df_all_proc[pmonth]
 df_all_proc = df_all_proc.apply(lambda x: round(x, 4))
 df_all_proc = df_all_proc.reset_index()
 
-#aggregate by process
-df_all_proc = df_all.groupby('Process').agg({
-    f'{prefix}Adherence': 'mean',
-    'Adherence': 'mean'
-})
-df_all_proc.columns = [pmonth, cmonth]
-df_all_proc['Delta'] = df_all_proc[cmonth] - df_all_proc[pmonth]
-df_all_proc = df_all_proc.apply(lambda x: round(x, 4))
-df_all_proc = df_all_proc.reset_index()
-
 #aggregate by activity
 df_all_act = df_all.groupby(['Process', 'Activity']).agg({
     f'{prefix}Adherence': 'mean',
