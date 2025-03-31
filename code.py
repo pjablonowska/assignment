@@ -3,6 +3,7 @@ import openpyxl
 import datetime
 import calendar
 
+#files were initially renamed to jan.xlsx and feb.xlsx
 #skipping 2 first rows with filter values for the report
 df1=pd.read_excel('jan.xlsx', sheet_name = 'Sheet1', header = 2) 
 df2=pd.read_excel('feb.xlsx', sheet_name = 'Sheet1', header = 2)
