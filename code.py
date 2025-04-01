@@ -37,7 +37,6 @@ df_all = df_all.merge(df11, how='outer', left_on = ['Application Name -> Process
  f'{prefix}Activity',
  f'{prefix}Metric'])
 
-#depends how the code is executed, additional check
 #df_all.columns.tolist()
 #df_all.isnull().sum()
 
@@ -64,6 +63,11 @@ df_all_app['Delta'] = df_all_app[cmonth] - df_all_app[pmonth]
 df_all_app = df_all_app.apply(lambda x: round(x, 4))
 df_all_app = df_all_app.reset_index()
 
+#change aggregate by app
+df_all_app_count = df_all.groupby(['Application Name -> Process -> Activity -> Metric', 'change_type']).size().reset_index(name='count')
+df_all_app_count = df_all_app_count.reset_index()
+df_all_app_count.rename(columns={df_all_app_count.columns[-1]: 'count', df_all_app_count.columns[-2]:'Change Type'}, inplace=True)
+
 #aggregate by process
 df_all_proc = df_all.groupby('Process').agg({
     f'{prefix}Adherence': 'mean',
@@ -73,6 +77,13 @@ df_all_proc.columns = [pmonth, cmonth]
 df_all_proc['Delta'] = df_all_proc[cmonth] - df_all_proc[pmonth]
 df_all_proc = df_all_proc.apply(lambda x: round(x, 4))
 df_all_proc = df_all_proc.reset_index()
+
+#change aggregate by process
+df_all_proc_count = df_all.groupby(['Process', 'change_type']).agg({
+    'Application Name -> Process -> Activity -> Metric': 'count'
+})
+df_all_proc_count = df_all_proc_count.reset_index()
+df_all_proc_count.rename(columns={df_all_proc_count.columns[-1]: 'count', df_all_proc_count.columns[-2]:'Change Type'}, inplace=True)
 
 #aggregate by activity
 df_all_act = df_all.groupby(['Process', 'Activity']).agg({
@@ -84,6 +95,13 @@ df_all_act['Delta'] = df_all_act[cmonth] - df_all_act[pmonth]
 df_all_act = df_all_act.apply(lambda x: round(x, 4))
 df_all_act = df_all_act.reset_index()
 
+#change aggregate by activity
+df_all_act_count = df_all.groupby(['Process', 'Activity', 'change_type']).agg({
+    'Application Name -> Process -> Activity -> Metric': 'count'
+})
+df_all_act_count = df_all_met_count.reset_index()
+df_all_act_count.rename(columns={df_all_act_count.columns[-1]: 'count', df_all_act_count.columns[-2]:'Change Type'}, inplace=True)
+
 #aggregate by metric
 df_all_met = df_all.groupby(['Process', 'Activity', 'Metric']).agg({
     f'{prefix}Adherence': 'mean',
@@ -94,11 +112,19 @@ df_all_met['Delta'] = df_all_met[cmonth] - df_all_met[pmonth]
 df_all_met = df_all_met.apply(lambda x: round(x, 4))
 df_all_met = df_all_met.reset_index()
 
+#change aggregate by metric
+df_all_met_count = df_all.groupby(['Process', 'Activity', 'Metric','change_type']).agg({
+    'Application Name -> Process -> Activity -> Metric': 'count'
+})
+df_all_met_count = df_all_met_count.reset_index()
+df_all_met_count.rename(columns={df_all_met_count.columns[-1]: 'count', df_all_met_count.columns[-2]:'Change Type'}, inplace=True)
+
 #aggregate by adherence state
 df_all_ad = df_all.groupby('change_type').agg({
     'Metric': 'count',
 })
 df_all_ad = df_all_ad.reset_index()
+df_all_ad.rename(columns={df_all_ad.columns[1]: 'count', df_all_ad.columns[0]:'Change Type'}, inplace=True)
 
 with pd.ExcelWriter('output.xlsx', engine='openpyxl') as writer:
     df1.to_excel(writer, sheet_name=pmonth, index=False)
@@ -127,7 +153,7 @@ table.table_style='TableStyleMedium3'
 #adding sheet for pivot
 pws = wb.sheets.add('pivot apps')
 
-#inserting pivot - completely new skill for me
+#inserting pivot
 pcache = wb.api.PivotCaches().Create(
     SourceType=constants.PivotTableSourceType.xlDatabase,
     SourceData=data_range.api)
@@ -148,39 +174,63 @@ pws.range('C1').api.Font.Bold = True
 pws.range('C1:D1').color = (1, 150, 32)
 pws.autofit()
 
-#formatting rest of the sheets
+#formatting rest of the sheets - process
+ws_proc=wb.sheets['process']
+data_range = ws_proc.range('A1').expand('table')
+table=ws_proc.tables.add(source=data_range, name = 'process', has_headers=True)
+table.table_style='TableStyleMedium3'
+ws_proc.range('B2').expand('table').number_format = '0.00%'
+ws_proc.range('F1').value = df_all_proc_count
+data_range = ws_proc.range('F1').expand('table')
+table=ws_proc.tables.add(source=data_range, name = 'process count', has_headers=True)
+table.table_style='TableStyleMedium3'
+ws_proc.range('F:F').api.Delete()
+ws_proc.autofit()
+
+#formatting - application
 ws_app=wb.sheets['app']
 data_range = ws_app.range('A1').expand('table')
 table=ws_app.tables.add(source=data_range, name = 'app', has_headers=True)
 table.table_style='TableStyleMedium2'
 ws_app.range('B2').expand('table').number_format = '0.00%'
+ws_app.range('F1').value = df_all_app_count
+data_range = ws_app.range('H1').expand('table')
+table=ws_app.tables.add(source=data_range, name = 'app count', has_headers=True)
+table.table_style='TableStyleMedium2'
+ws_app.range('F:G').api.Delete()
 ws_app.autofit()
 
-ws_proc=wb.sheets['process']
-data_range = ws_proc.range('A1').expand('table')
-table=ws_proc.tables.add(source=data_range, name = 'process', has_headers=True)
-table.table_style='TableStyleMedium1'
-ws_proc.range('B2:D12').number_format = '0.00%'
-ws_proc.autofit()
-
+#formatting - activity
 ws_act=wb.sheets['activity']
 data_range = ws_act.range('A1').expand('table')
 table=ws_act.tables.add(source=data_range, name = 'activity', has_headers=True)
 table.table_style='TableStyleMedium4'
 ws_act.range('C2').expand('table').number_format = '0.00%'
+ws_act.range('G1').value = df_all_act_count
+data_range = ws_act.range('G1').expand('table')
+table=ws_act.tables.add(source=data_range, name = 'activity count', has_headers=True)
+table.table_style='TableStyleMedium4'
+ws_act.range('G:H').api.Delete()
 ws_act.autofit()
 
+#formatting - metric
 ws_met=wb.sheets['metric']
 data_range = ws_met.range('A1').expand('table')
 table=ws_met.tables.add(source=data_range, name = 'metric', has_headers=True)
 table.table_style='TableStyleMedium5'
-ws_met.range('C2').expand('table').number_format = '0.00%'
+ws_met.range('D2').expand('table').number_format = '0.00%'
+ws_met.range('H1').value = df_all_met_count
+data_range = ws_met.range('H1').expand('table')
+table=ws_met.tables.add(source=data_range, name = 'metric count', has_headers=True)
+table.table_style='TableStyleMedium5'
+ws_met.range('H:I').api.Delete()
 ws_met.autofit()
 
+#formatting - change
 ws_ad=wb.sheets['change']
 data_range = ws_ad.range('A1').expand('table')
 table=ws_ad.tables.add(source=data_range, name = 'change', has_headers=True)
-table.table_style='TableStyleMedium5'
+table.table_style='TableStyleMedium6'
 ws_ad.autofit()
 
 wb.save()
