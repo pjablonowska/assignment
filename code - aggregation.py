@@ -169,6 +169,16 @@ pws.range('C1').api.Font.Bold = True
 pws.range('C1:D1').color = (1, 150, 32)
 pws.autofit()
 
+#formatting Jan & Feb Tables
+ws_cmonth=wb.sheets[cmonth]
+data_range = ws_cmonth.range('A1').expand('table')
+table=ws_cmonth.tables.add(source=data_range, name = cmonth, has_headers=True)
+table.table_style='TableStyleMedium7'
+ws_pmonth=wb.sheets[pmonth]
+data_range = ws_pmonth.range('A1').expand('table')
+table=ws_pmonth.tables.add(source=data_range, name = pmonth, has_headers=True)
+table.table_style='TableStyleMedium9'
+
 #formatting rest of the sheets - application
 ws_app=wb.sheets['app']
 data_range = ws_app.range('A1').expand('table')
