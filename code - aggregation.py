@@ -174,6 +174,7 @@ ws_cmonth=wb.sheets[cmonth]
 data_range = ws_cmonth.range('A1').expand('table')
 table=ws_cmonth.tables.add(source=data_range, name = cmonth, has_headers=True)
 table.table_style='TableStyleMedium7'
+
 ws_pmonth=wb.sheets[pmonth]
 data_range = ws_pmonth.range('A1').expand('table')
 table=ws_pmonth.tables.add(source=data_range, name = pmonth, has_headers=True)
@@ -199,6 +200,7 @@ data_range = ws_proc.range('A1').expand('table')
 table=ws_proc.tables.add(source=data_range, name = 'process', has_headers=True)
 table.table_style='TableStyleMedium3'
 ws_proc.range('B2').expand('table').number_format = '0.00%'
+
 ws_proc.range('G1').value = df_all_proc_count
 data_range = ws_proc.range('G1').expand('table')
 table=ws_proc.tables.add(source=data_range, name = 'process count', has_headers=True)
@@ -212,6 +214,7 @@ data_range = ws_act.range('A1').expand('table')
 table=ws_act.tables.add(source=data_range, name = 'activity', has_headers=True)
 table.table_style='TableStyleMedium4'
 ws_act.range('C2').expand('table').number_format = '0.00%'
+
 ws_act.range('h1').value = df_all_act_count
 data_range = ws_act.range('h1').expand('table')
 table=ws_act.tables.add(source=data_range, name = 'activity count', has_headers=True)
@@ -226,6 +229,7 @@ data_range = ws_met.range('A1').expand('table')
 table=ws_met.tables.add(source=data_range, name = 'metric', has_headers=True)
 table.table_style='TableStyleMedium5'
 ws_met.range('D2').expand('table').number_format = '0.00%'
+
 ws_met.range('I1').value = df_all_met_count
 data_range = ws_met.range('I1').expand('table')
 table=ws_met.tables.add(source=data_range, name = 'metric count', has_headers=True)
