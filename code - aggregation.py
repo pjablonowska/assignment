@@ -59,7 +59,7 @@ df_all_app = df_all.groupby('Application Name -> Process -> Activity -> Metric')
     'Adherence': 'mean'
 })
 df_all_app.columns = [pmonth, cmonth]
-df_all_app['Delta'] = df_all_app[cmonth] - df_all_app[pmonth]
+df_all_app['Delta'] = df_all_app[pmonth] - df_all_app[cmonth]
 df_all_app = df_all_app.apply(lambda x: round(x, 4))
 df_all_app = df_all_app.reset_index()
 
@@ -73,7 +73,7 @@ df_all_proc = df_all.groupby(['Application Name -> Process -> Activity -> Metric
     f'{prefix}Adherence': 'mean',
     'Adherence': 'mean'})
 df_all_proc.columns = [pmonth, cmonth]
-df_all_proc['Delta'] = df_all_proc[cmonth] - df_all_proc[pmonth]
+df_all_proc['Delta'] = df_all_proc[pmonth] - df_all_proc[cmonth]
 df_all_proc = df_all_proc.apply(lambda x: round(x, 4))
 df_all_proc = df_all_proc.reset_index()
 
@@ -88,7 +88,7 @@ df_all_act = df_all.groupby(['Application Name -> Process -> Activity -> Metric'
     'Adherence': 'mean'
 })
 df_all_act.columns = [pmonth, cmonth]
-df_all_act['Delta'] = df_all_act[cmonth] - df_all_act[pmonth]
+df_all_act['Delta'] = df_all_act[pmonth] - df_all_act[cmonth]
 df_all_act = df_all_act.apply(lambda x: round(x, 4))
 df_all_act = df_all_act.reset_index()
 
@@ -103,7 +103,7 @@ df_all_met = df_all.groupby(['Application Name -> Process -> Activity -> Metric'
     'Adherence': 'mean'
 })
 df_all_met.columns = [pmonth, cmonth]
-df_all_met['Delta'] = df_all_met[cmonth] - df_all_met[pmonth]
+df_all_met['Delta'] = df_all_met[pmonth] - df_all_met[cmonth]
 df_all_met = df_all_met.apply(lambda x: round(x, 4))
 df_all_met = df_all_met.reset_index()
 
