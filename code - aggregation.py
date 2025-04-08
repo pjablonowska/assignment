@@ -13,7 +13,7 @@ df2=pd.read_excel('feb.xlsx', sheet_name = 'Sheet1', header = 2)
 
 #today = datetime.date.today() - would be useful
 #since we have data for Feb and Jan we have to report on the 28.02.2025
-today = datetime.date(2025, 2, 20)
+today = datetime.date(2025, 2, 28)
 
 cmonth = calendar.month_name[today.month]
 
