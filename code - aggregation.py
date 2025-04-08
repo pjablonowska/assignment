@@ -185,7 +185,8 @@ data_range = ws_app.range('A1').expand('table')
 table=ws_app.tables.add(source=data_range, name = 'app', has_headers=True)
 table.table_style='TableStyleMedium2'
 ws_app.range('B2').expand('table').number_format = '0.00%'
-ws_app.range('F1').value = df_all_app_count
+
+ws_app.range('H1').value = df_all_app_count
 data_range = ws_app.range('H1').expand('table')
 table=ws_app.tables.add(source=data_range, name = 'app count', has_headers=True)
 table.table_style='TableStyleMedium2'
